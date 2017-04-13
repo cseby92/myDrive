@@ -1,6 +1,6 @@
 <template>
-  <div class="panel-body">
-    <table class="table">
+  <div class="panel-body margin-bottom">
+    <table class="table margin-bottom">
       <thead>
       <tr>
         <th>
@@ -20,7 +20,9 @@
       <tbody>
         <tr v-if="parent !== ''">
           <td>
-            <i class="glyphicon glyphicon-level-up"></i>
+            <button class="btn btn-link">
+              <span class="glyphicon glyphicon-level-up"></span>
+            </button>
           </td>
           <td>
             {{ parent }} "(parent)"
@@ -29,10 +31,12 @@
             dir
           </td>
         </tr>
-        <tr v-for="file in files">
+        <tr v-for="(file, index) in files">
           <td>
-            <i class="glyphicon glyphicon-folder-open" v-if="file.extension === 'dir'"></i>
-            <i class="glyphicon glyphicon-file" v-else></i>
+            <button class="btn btn-link">
+              <span class="glyphicon glyphicon-folder-open" v-if="file.extension === 'dir'"></span>
+              <span class="glyphicon glyphicon-file" v-else></span>
+            </button>
           </td>
           <td>
             {{ file.name }}
@@ -41,7 +45,10 @@
             {{ file.extension }}
           </td>
           <td>
-            <i class="glyphicon glyphicon-trash"></i>
+            <button class="btn btn-link" @click="removeFile(index)">
+              <span class="glyphicon glyphicon-trash"></span>
+            </button>
+
           </td>
         </tr>
       </tbody>
@@ -52,6 +59,7 @@
 <script>
 import fileService from '../services/fileservice';
 export default {
+  props: ['inFiles'],
   data () {
     return {
         currentFolder: 'myFolder',
@@ -62,20 +70,31 @@ export default {
   methods: {
     changeFolder(event){
       this.$emit('folderChanged', this.currentFolder);
+    },
+    removeFile(index){
+        console.log(index);
     }
   },
     //lifecycle events
     created(){
-      let rootNameAndContent = fileService.getRootDir();
-      this.currentFolder = rootNameAndContent.dirName;
-      this.files = rootNameAndContent.files;
-      this.changeFolder();
-  }
+      this.files = this.inFiles.files;
+      this.currentFolder = this.inFiles.dirName;
+    }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
+.icon-large{
+  height: 50px;
+  width: 20px;
+}
+
+.margin-bottom{
+  margin-bottom: 1px;
+}
+
 h1, h2 {
   font-weight: normal;
 }

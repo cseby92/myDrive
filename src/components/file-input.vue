@@ -10,42 +10,58 @@
 
   import fileService from '../services/fileservice';
   import Dropzone from 'dropzone';
+  import Vue from 'vue';
 
   let upFile = ''; //name, extension,id
+
+ let comp = Vue.component('file-input',{
+   mounted(){
+     window.componentInstance = this;
+   },
+   data () {
+      return {}
+    },
+    methods: {
+      notifyParentAboutUpload(name, id) {
+          console.log(this);
+        this.$emit('addedFileEvent', [name,id]);
+      }
+    }
+  });
+
+ export default comp;
 
   Dropzone.options.myAwesomeDropzone = {
     autoProcessQueue: false,
 
     accept(file,done){
+
+      /*
       var reader = new FileReader();
       reader.onload = (e) => {
-       // console.log(reader.result);
+        //check file
+        //...
+        //post with fileservice
+        let id = fileService.uploadFile(reader.result, file.name);
+
+
         this.removeFile(file);
       }
       reader.readAsText(file);
+      */
+      let id = fileService.uploadFile(file,file.name).id;
+      if( id ){
+        toastr.success(file.name + ' file succesfully uploaded');
+        window.componentInstance.notifyParentAboutUpload(file.name, id);
+      }
+      else
+        toastr.error('Unable to upload ' + file.name + ' please try it again');
 
-      //check file
-      //post with fileservice
-      //if ok, send event to main-comp and add to file list
-
-      toastr.success(file.name + " file uploaded");
-
-
+      this.removeFile(file);
       done();
     }
   };
 
-  export default {
-    init() {
-
-    },
-    data () {
-      return {}
-    },
-    methods: {
-
-    }
-  }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
