@@ -5,9 +5,9 @@
     </div>
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3> {{ currentDir }}</h3>
+        <h3> {{ filesList.dirName }}</h3>
       </div>
-      <file-list @folderChanged="currentDir = $event" :inFiles ="filesList" ></file-list>
+      <file-list @removedFile="fileRemoved" @folderChanged="currentDir = $event" :inFiles ="filesList" ></file-list>
     </div>
     <file-input @addedFileEvent="addFile" ></file-input>
     <add-folder @addedFolderEvent="addFolder" ></add-folder>
@@ -37,20 +37,24 @@
       }
     },
     methods: {
-        addFile: function(event){
-          let splitted = event[0].split('.');
-          this.filesList.files.push({
-            name: splitted[0],
-            extension: splitted[1],
-            id: ''
-          });
-        },
+      addFile(event){
+        let splitted = event[0].split('.');
+        this.filesList.files.push({
+          name: splitted[0],
+          extension: splitted[1],
+          id: ''
+        });
+      },
       addFolder: function(event) {
         this.filesList.files.push({
           name: event[0],
           extension: 'dir',
           id: ''
         });
+      },
+      fileRemoved(event){
+          console.log(event[0]);
+        this.filesList.files = event[0];
       }
     },
     components: {
@@ -64,17 +68,6 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
-  .btn-addfolder{
-    height:50px;
-    width:500px;
-  }
-  .center{
-    text-align:center;
-    padding-top: 1px;
-    padding-bottom: 1px;
-    margin-top: 1px;
-    margin-bottom: 15px;
-  }
 
   h1, h2 {
     font-weight: normal;

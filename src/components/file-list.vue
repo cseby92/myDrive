@@ -31,9 +31,9 @@
             dir
           </td>
         </tr>
-        <tr v-for="(file, index) in files">
+        <tr v-for="(file, index) in inFiles.files">
           <td>
-            <button class="btn btn-link">
+            <button class="btn btn-link" @click="fileClicked(file)">
               <span class="glyphicon glyphicon-folder-open" v-if="file.extension === 'dir'"></span>
               <span class="glyphicon glyphicon-file" v-else></span>
             </button>
@@ -68,17 +68,45 @@ export default {
     }
   },
   methods: {
-    changeFolder(event){
-      this.$emit('folderChanged', this.currentFolder);
-    },
+
     removeFile(index){
-        console.log(index);
-    }
+      let isRemoved = fileService.removeFile(this.files[index].id);
+      if (isRemoved){
+          toastr.success(this.files[index].name +'.' + this.files[index].extension + ' succesfully removed');
+          this.files.splice(index, 1);
+          this.$emit('removedFile', [this.files]);
+
+      }else{
+          toastr.error('Error occured while removing file: ' + this.files[index].name +'.' + this.files[index].extension);
+      }
+    },
+    fileClicked(file){
+      if(file.extension === 'dir')
+          this.openFolder(file);
+      else
+          this.openFile(file);
+    },
+    openFile(file){
+
+    },
+    openFolder(folder){
+
+       let contentOfFolder = fileService.getContentInDir(folder);
+       if(!folder){
+         toastr.error('Error occured whilke opening folder: ' + this.files[index].name +'.' + this.files[index].extension);
+       }
+       else{
+         this.currentFolder = folder.name;
+         this.$emit('folderChanged', this.currentFolder);
+       }
+    },
+
+
   },
     //lifecycle events
     created(){
       this.files = this.inFiles.files;
-      this.currentFolder = this.inFiles.dirName;
+      this.currentFolder = this.inFiles.currentFolder;
     }
 }
 </script>

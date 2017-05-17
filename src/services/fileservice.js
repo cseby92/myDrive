@@ -1,93 +1,99 @@
-import Vue from 'vue'
-import axios from 'axios'
-import encoder from './base64encoder.js'
-
+import Vue from 'vue';
+import axios from 'axios';
 
 
 export default {
   getRootDir(){
 
-  /*
-    axios.get('http://localhost:8080/')
-      .then(function (response) {
-        return response.json();
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-   */
+    /*
+     axios.get('http://localhost:8080/')
+     .then(function (response) {
+     return response.json();
+     })
+     .catch(function (error) {
+     console.log(error);
+     });
+     */
 
     return {
       dirName: 'someDir',
       files: [{
         name: 'myFile1',
         extension: 'txt',
-        id: ''
-        },
+        id: ' '
+      },
         {
           name: 'myFile2',
           extension: 'txt',
-          id: ''
+          id: ' '
         },
-          {
+        {
           name: 'myFolder',
           extension: 'dir',
-          id: ''
+          id: ' '
         }]
     }
   },
   getContentInDir(dirName){
-  /*
+    /*
      axios.get('http://localhost:8080/' + dirName)
      .then(function (response) {
-      return response.json();
+     return response.json();
      })
      .catch(function (error) {
-       console.log(error);
+     console.log(error);
      });
-  */
-    return {};
+     */
+    return
+    files: [{
+      name: 'wegregw',
+      extension: 'txt',
+      id: ''
+    },
+      {
+        name: 'grewhqrehrq',
+        extension: 'exe',
+        id: ''
+      }];
   },
   uploadFile(file, name){
-    //MOVE THIS
+
+    let sizeofChunks = 65035;
+    let regexp = new RegExp( '.{1,' + sizeofChunks + '}', 'g');
+    let chunks = file.match(regexp);
+    console.log(chunks);
+
     let splitted = name.split(/\.(?=[^\.]+$)/);
     let fileName = splitted[0];
     let fileExtension = splitted[1];
-    //inside callback
 
-    let encodedFile = '';
-    let reader = encoder.encode(file);
-    reader.onload = function(){
-      encodedFile = reader.result;
-    }
-    //post file object
-    //returns id
-    /*
-     axios.post('http://localhost:8080/', {
+    let request = axios.post('http://192.168.1.104:8080/file/stream', {
       'filename': name,
       'content': file
-    }).done(function (response) {
+    },{ headers: {
+      'Transfer-Encoding': 'chunked'
+    }}).then(function (response) {
 
+      return {
+        name: fileName,
+        extension: fileExtension,
+        id: response.data.id
+      }
 
-        return {
-          name: fileName,
-          extension: fileExtension,
-          id: id
-        }
-      })
-      .fail(function (error) {
-        console.log(error);
-      });
-*/
-    return {
-      name: fileName,
-      extension: fileExtension,
-      id: '1'
-    }
+    }).catch(function (error) {
+      console.log(error);
+    });
 
-
+    return request;
   },
+
+
   createFolder(folderName){
+
+
+
+
+    //check for name if already exists in this dir!!
     /*
      axios.post('http://localhost:8080/', {
      'filename': name,
@@ -107,9 +113,21 @@ export default {
      */
     return {
       name: folderName,
-      extension: dir,
+      extension: 'dir',
       id: '1'
     }
+  },
+  removeFile(id){
+    /*    axios.delete('http://localhost:8080/', {data: {'id': id}}).then(function (response) {
+
+
+     return true;
+     }).catch(function (error) {
+     console.log(error);
+     });
+     return false;
+     */
+    return true;
   }
 
 }
